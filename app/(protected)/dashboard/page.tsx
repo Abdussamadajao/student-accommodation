@@ -26,13 +26,10 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Get accommodation requests
     const requests = JSON.parse(
       localStorage.getItem("accommodationRequests") || "[]"
     );
     setAccommodationRequests(requests);
-
-    // Get payments
     const paymentData = JSON.parse(localStorage.getItem("payments") || "[]");
     setPayments(paymentData);
   }, []);
@@ -60,34 +57,43 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-muted/40">
+      {/* Header */}
       <header className="bg-[#006400] px-4 py-3 text-white">
-        <div className="container mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold">Alhikmah University Housing</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm">{user?.name}</span>
+        <div className="container mx-auto flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-lg font-bold sm:text-xl md:text-2xl">
+            Alhikmah University Housing
+          </h1>
+          <div className="flex items-center gap-2">
+            <span className="truncate text-sm max-w-[120px] sm:max-w-none">
+              {user?.name}
+            </span>
             <Button
               variant="outline"
               size="sm"
-              className="border-white text-white"
+              className="border-white text-white hover:bg-white/10"
               onClick={logout}>
               <LogOut className="mr-2 h-4 w-4" />
-              Logout
+              <span className="sr-only sm:not-sr-only">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6 md:py-8">
+        {/* Dashboard Header */}
+        <div className="mb-6 flex flex-col gap-4 md:mb-8 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
               Student Dashboard
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground md:text-lg">
               Manage your accommodation and payments
             </p>
           </div>
-          <Button asChild className="bg-[#006400] hover:bg-[#004d00]">
+          <Button
+            asChild
+            className="w-full bg-[#006400] hover:bg-[#004d00] md:w-auto">
             <Link href="/hostels">
               <Plus className="mr-2 h-4 w-4" />
               Browse Hostels
@@ -95,56 +101,42 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        <div className="mb-8 rounded-lg border p-6">
-          <h2 className="mb-4 text-xl font-semibold">Student Information</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                Full Name
-              </p>
-              <p>{user?.name}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                Matric Number
-              </p>
-              <p>{user?.matricNumber}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Email</p>
-              <p>{user?.email}</p>
-            </div>
-            {user?.faculty && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Faculty
-                </p>
-                <p className="capitalize">{user.faculty.replace("_", " ")}</p>
-              </div>
-            )}
-            {user?.department && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Department
-                </p>
-                <p className="capitalize">
-                  {user.department.replace("_", " ")}
-                </p>
-              </div>
-            )}
-            {user?.level && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Level
-                </p>
-                <p>{user.level} Level</p>
-              </div>
+        {/* Student Info Section */}
+        <div className="mb-6 rounded-lg border p-4 md:mb-8 md:p-6">
+          <h2 className="mb-4 text-lg font-semibold md:text-xl">
+            Student Information
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {[
+              { label: "Full Name", value: user?.name },
+              { label: "Matric Number", value: user?.matricNumber },
+              { label: "Email", value: user?.email },
+              { label: "Faculty", value: user?.faculty?.replace("_", " ") },
+              {
+                label: "Department",
+                value: user?.department?.replace("_", " "),
+              },
+              {
+                label: "Level",
+                value: user?.level ? `${user.level} Level` : null,
+              },
+            ].map(
+              (item) =>
+                item.value && (
+                  <div key={item.label} className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {item.label}
+                    </p>
+                    <p className="truncate capitalize">{item.value}</p>
+                  </div>
+                )
             )}
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card>
+        {/* Stats Cards */}
+        <div className="grid gap-4 md:grid-cols-3 md:gap-6">
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Accommodation Requests
@@ -152,16 +144,16 @@ export default function DashboardPage() {
               <Building className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold md:text-3xl">
                 {accommodationRequests.length}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground md:text-sm">
                 Total accommodation requests
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Payments Made
@@ -169,21 +161,19 @@ export default function DashboardPage() {
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold md:text-3xl">
                 ₦
                 {payments
-                  .reduce(
-                    (total: any, payment: any) =>
-                      total + Number(payment.amount),
-                    0
-                  )
+                  .reduce((t: number, p: any) => t + Number(p.amount), 0)
                   .toLocaleString()}
               </div>
-              <p className="text-xs text-muted-foreground">Total amount paid</p>
+              <p className="text-xs text-muted-foreground md:text-sm">
+                Total amount paid
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Profile Completion
@@ -191,37 +181,48 @@ export default function DashboardPage() {
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">100%</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold md:text-3xl">100%</div>
+              <p className="text-xs text-muted-foreground md:text-sm">
                 Your profile is complete
               </p>
             </CardContent>
           </Card>
         </div>
 
+        {/* Tabs Section */}
         <Tabs defaultValue="accommodations" className="mt-6">
-          <TabsList>
-            <TabsTrigger value="accommodations">Accommodations</TabsTrigger>
-            <TabsTrigger value="payments">Payments</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 md:w-auto">
+            <TabsTrigger value="accommodations" className="py-2 md:px-6">
+              Accommodations
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="py-2 md:px-6">
+              Payments
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="accommodations" className="mt-6">
+
+          {/* Accommodations Tab */}
+          <TabsContent value="accommodations" className="mt-4 md:mt-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Your Accommodation Requests</CardTitle>
-                <CardDescription>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="text-lg md:text-xl">
+                  Your Accommodation Requests
+                </CardTitle>
+                <CardDescription className="md:text-sm">
                   View and manage your accommodation requests
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 md:p-6">
                 {accommodationRequests.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-                    <Home className="mb-2 h-10 w-10 text-muted-foreground" />
-                    <h3 className="mb-1 text-lg font-medium">
-                      No accommodation requests
-                    </h3>
-                    <p className="mb-4 text-sm text-muted-foreground">
-                      You haven't made any accommodation requests yet.
-                    </p>
+                  <div className="flex flex-col items-center justify-center space-y-4 rounded-lg border border-dashed p-6 text-center">
+                    <Home className="h-8 w-8 text-muted-foreground md:h-10 md:w-10" />
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-medium md:text-xl">
+                        No accommodation requests
+                      </h3>
+                      <p className="text-sm text-muted-foreground md:text-base">
+                        You haven't made any accommodation requests yet.
+                      </p>
+                    </div>
                     <Button asChild className="bg-[#006400] hover:bg-[#004d00]">
                       <Link href="/hostels">
                         <Plus className="mr-2 h-4 w-4" />
@@ -233,27 +234,27 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     {accommodationRequests.map((request: any) => (
                       <div key={request.id} className="rounded-lg border p-4">
-                        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-                          <div>
-                            <h3 className="font-medium">
+                        <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
+                          <div className="space-y-1">
+                            <h3 className="font-medium md:text-lg">
                               {request.hostelName || "Hostel Accommodation"}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                               Requested on {formatDate(request.createdAt)}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             {request.roomId && (
                               <Badge
                                 variant="outline"
-                                className="bg-blue-50 text-blue-800 border-blue-200">
+                                className="bg-blue-50 text-blue-800 border-blue-200 text-xs md:text-sm">
                                 Room {request.roomId}
                               </Badge>
                             )}
                             <span
-                              className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(
+                              className={`rounded-full px-2.5 py-1 text-xs font-medium ${getStatusColor(
                                 request.status
-                              )}`}>
+                              )} md:text-sm`}>
                               {request.status.charAt(0).toUpperCase() +
                                 request.status.slice(1)}
                             </span>
@@ -262,47 +263,53 @@ export default function DashboardPage() {
 
                         <Separator className="my-3" />
 
-                        <div className="grid gap-2 sm:grid-cols-3">
-                          <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                          {/* Room Type */}
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground md:text-sm">
                               Room Type
                             </p>
-                            <p className="text-sm">
-                              {request.roomType === "1-person"
-                                ? "Single Room"
-                                : request.roomType === "2-person"
-                                ? "Double Room"
-                                : request.roomType === "4-person"
-                                ? "Quad Room"
-                                : request.roomType || "Standard"}
+                            <p className="text-sm md:text-base">
+                              {(
+                                {
+                                  "1-person": "Single Room",
+                                  "2-person": "Double Room",
+                                  "4-person": "Quad Room",
+                                } as Record<string, string>
+                              )[request.roomType] || "Standard"}
                             </p>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+
+                          {/* Duration */}
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground md:text-sm">
                               Duration
                             </p>
-                            <p className="text-sm capitalize">
+                            <p className="text-sm capitalize md:text-base">
                               {(request.duration || "full_year").replace(
                                 "_",
                                 " "
                               )}
                             </p>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+
+                          {/* Price */}
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground md:text-sm">
                               Price
                             </p>
-                            <p className="text-sm">
+                            <p className="text-sm md:text-base">
                               ₦{(request.price || 0).toLocaleString()}
                             </p>
                           </div>
                         </div>
 
-                        <div className="mt-4 flex justify-end gap-2">
+                        <div className="mt-4 flex flex-wrap gap-2">
                           {request.status === "pending" && (
                             <Button
                               variant="outline"
                               size="sm"
+                              className="w-full sm:w-auto"
                               onClick={() =>
                                 router.push(
                                   `/payment?id=${request.id}&amount=${
@@ -314,7 +321,10 @@ export default function DashboardPage() {
                               Pay Now
                             </Button>
                           )}
-                          <Button variant="secondary" size="sm">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="w-full sm:w-auto">
                             View Details
                           </Button>
                         </div>
@@ -326,65 +336,77 @@ export default function DashboardPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="payments" className="mt-6">
+          {/* Payments Tab */}
+          <TabsContent value="payments" className="mt-4 md:mt-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Payment History</CardTitle>
-                <CardDescription>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="text-lg md:text-xl">
+                  Payment History
+                </CardTitle>
+                <CardDescription className="md:text-sm">
                   View your payment history and receipts
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 md:p-6">
                 {payments.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-                    <CreditCard className="mb-2 h-10 w-10 text-muted-foreground" />
-                    <h3 className="mb-1 text-lg font-medium">
-                      No payments yet
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      You haven't made any payments yet.
-                    </p>
+                  <div className="flex flex-col items-center justify-center space-y-4 rounded-lg border border-dashed p-6 text-center">
+                    <CreditCard className="h-8 w-8 text-muted-foreground md:h-10 md:w-10" />
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-medium md:text-xl">
+                        No payments yet
+                      </h3>
+                      <p className="text-sm text-muted-foreground md:text-base">
+                        You haven't made any payments yet.
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {payments.map((payment: any) => (
                       <div key={payment.id} className="rounded-lg border p-4">
-                        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-                          <div>
-                            <h3 className="font-medium">
+                        <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
+                          <div className="space-y-1">
+                            <h3 className="font-medium md:text-lg">
                               Payment #{payment.id.slice(-4)}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                               {formatDate(payment.date)}
                             </p>
                           </div>
-                          <div className="text-xl font-bold">
+                          <div className="text-lg font-bold md:text-xl">
                             ₦{Number(payment.amount).toLocaleString()}
                           </div>
                         </div>
 
                         <Separator className="my-3" />
 
-                        <div className="grid gap-2 sm:grid-cols-3">
-                          <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                          {/* Payment Method */}
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground md:text-sm">
                               Payment Method
                             </p>
-                            <p className="text-sm capitalize">
+                            <p className="text-sm capitalize md:text-base">
                               {payment.paymentMethod.replace("_", " ")}
                             </p>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+
+                          {/* Status */}
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground md:text-sm">
                               Status
                             </p>
-                            <p className="text-sm text-green-600">Completed</p>
+                            <p className="text-sm text-green-600 md:text-base">
+                              Completed
+                            </p>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+
+                          {/* Reference */}
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground md:text-sm">
                               Reference
                             </p>
-                            <p className="text-sm">
+                            <p className="text-sm md:text-base">
                               ACC-{payment.accommodationId}
                             </p>
                           </div>
@@ -400,8 +422,8 @@ export default function DashboardPage() {
                   </div>
                 )}
               </CardContent>
-              <CardFooter>
-                <p className="text-xs text-muted-foreground">
+              <CardFooter className="p-4 md:p-6">
+                <p className="text-xs text-muted-foreground md:text-sm">
                   Payments are processed securely. Contact support if you have
                   any questions.
                 </p>
